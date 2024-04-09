@@ -26,7 +26,7 @@ contract PointsSystem is IERC20 {
     uint256 totalSupply_;
 
     address private owner;
-    bytes32 private distributionRoot;
+    bytes32 public distributionRoot;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Caller is not the owner");
@@ -81,10 +81,10 @@ contract PointsSystem is IERC20 {
         distributionRoot = root;
     }
 
-    function verifyAddressInWhitelist(address account, bytes32 leafHash) public view returns (bool) {
-        bytes32[] memory proof = new bytes32[](1);
-        proof[0] = leafHash;
-        return MerkleProof.verify(proof, distributionRoot, keccak256(abi.encodePacked(account)));
+
+    function verifyAddressInWhitelist(address account, bytes32[] memory proof) public view returns (bool) {
+        bytes32 encodedAccount = keccak256(abi.encodePacked(account));
+        return MerkleProof.verify(proof, distributionRoot, encodedAccount);
     }
 
     function distributePoints(uint256 amount, address[] memory accounts) public onlyOwner {
