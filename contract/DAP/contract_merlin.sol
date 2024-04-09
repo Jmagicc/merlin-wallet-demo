@@ -44,6 +44,11 @@ contract PointsSystem is IERC20 {
         return totalSupply_;
     }
 
+    function mint(uint256 mintTotal) public onlyOwner {
+        totalSupply_ += mintTotal;
+        balances[owner] += mintTotal;
+    }
+
     function balanceOf(address tokenOwner) public override view returns (uint256) {
         return balances[tokenOwner];
     }

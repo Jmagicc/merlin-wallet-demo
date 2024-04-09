@@ -6,8 +6,26 @@ interface IERC20 {
 }
 
 contract CheckWBTCBalance {
-    address constant WBTC_ADDRESS = 0x3FdaCd1C4fCbF43568C5f3d9E674aE9C9ba30847;
-    address constant VOYA_ADDRESS = 0xC292F092bcE386d695c05f76a1fC234b9aF32c73;
+    address  WBTC_ADDRESS = 0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA;
+    address  VOYA_ADDRESS = 0x480E158395cC5b41e5584347c495584cA2cAf78d;
+
+
+    address private owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+    function setWBTCAddress(address newAddress) external onlyOwner {
+        WBTC_ADDRESS = newAddress;
+    }
+
+    function setVOYAAddress(address newAddress) external onlyOwner {
+        VOYA_ADDRESS = newAddress;
+    }
 
     function checkWBTCBalance(address account) public view returns (bool) {
         IERC20 wbtc = IERC20(WBTC_ADDRESS);
