@@ -30,25 +30,25 @@ contract CheckWBTCBalance {
     function checkWBTCBalance(address account) public view returns (bool) {
         IERC20 wbtc = IERC20(WBTC_ADDRESS);
         uint256 balance = wbtc.balanceOf(account);
-        return balance > 1e6; // Assume that 1 e 6 are the thresholds for judging whether the balance is sufficient
+        return balance > 1e16; // Assume that 1e16 are the thresholds for judging whether the balance is sufficient
     }
 
     function checkVOYACBalance(address account) public view returns (bool) {
         IERC20 voya = IERC20(VOYA_ADDRESS);
         uint256 balance = voya.balanceOf(account);
-        return balance > 1e6; // Use the same threshold for judgment
+        return balance > 1e16; // Use the same threshold for judgment
     }
 
     function checkWBTCBalanceOfSender() public view returns (bool) {
         IERC20 wbtc = IERC20(WBTC_ADDRESS);
         uint256 balance = wbtc.balanceOf(msg.sender);
-        return balance > 1e6; // Use the same threshold for judgment
+        return balance > 1e16; // Use the same threshold for judgment
     }
 
     function checkVOYABalanceOfSender() public view returns (bool) {
         IERC20 voya = IERC20(VOYA_ADDRESS);
         uint256 balance = voya.balanceOf(msg.sender);
-        return balance > 1e6; // Use the same threshold for judgment
+        return balance > 1e16; // Use the same threshold for judgment
     }
 
     function checkWBTCandVOYABalance() public view returns (uint256, uint256) {
