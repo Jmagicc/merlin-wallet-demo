@@ -11,8 +11,9 @@ interface IPointsSystem {
 
 contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     uint256 public constant MINT_PRICE = 0.001 ether;
-    uint256 public constant MAX_PAID_SUPPLY = 7888;
+    uint256 public constant MAX_PAID_SUPPLY = 8888;
     uint256 public constant MAX_MINTS_PER_ADDRESS = 5;
+    uint256 public constant MAX_VIP_SUPPLY = 1000; // 新增VIP最大供应量
     uint256 public paidMintCount;
     uint256 public vipMintCount;
     IPointsSystem pointsSystem;
@@ -34,9 +35,8 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     }
 
     function mintNFT(string memory uri, bytes32[] memory proof) public payable nonReentrant {
-        require(totalSupply() < MAX_PAID_SUPPLY + vipMintCount, "Max supply reached");
-
         if (checkIfUserIsWhitelisted(msg.sender, proof)) {
+            require(vipMintCount < MAX_VIP_SUPPLY, "Max VIP supply reached");
             // VIP minting, no limit on VIP mints
             vipMintCount++;
             uint256 newVIPTokenId = totalSupply() + 1;
