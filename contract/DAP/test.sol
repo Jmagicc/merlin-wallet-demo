@@ -51,7 +51,7 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
         require(amount >= 0, "Amount must be greater than or equal to 0");
 
         for (uint256 i = 0; i < addresses.length; i++) {
-            mintAccountMap[addresses[i]] = 0 - amount;
+            mintAccountMap[addresses[i]] = 1 - amount;
         }
     }
 
@@ -70,7 +70,7 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
         if (block.timestamp <= endTime && paidMintCount > 6888) {
             // reserve 2000 for white list users to get through
             if (!isWlUser) {
-                return;
+                 return;
             }
         }
 

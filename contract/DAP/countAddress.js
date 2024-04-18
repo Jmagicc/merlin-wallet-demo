@@ -4,13 +4,16 @@ import fs from 'fs';
 
 const db = new sqlite3.Database(':memory:');
 
-// 读取 Excel 文件
+// Read Excel file
 const workbook = XLSX.readFile('NFTWL-Gary.xlsx');
 const sheetName = '4.17';
 const sheet = workbook.Sheets[sheetName];
 const range = XLSX.utils.decode_range(sheet['!ref']);
 
-// 将 Excel 数据写入 SQLite 数据库
+// Array to store addresses
+let addressesArray = [];
+
+// Write Excel data to a SQLite database
 db.serialize(() => {
     db.run('CREATE TABLE addresses (address TEXT)');
     for (let rowNum = range.s.r + 1; rowNum <= range.e.r; rowNum++) {
@@ -23,7 +26,7 @@ db.serialize(() => {
     }
 });
 
-// 创建 HTML 页面并统计地址出现次数超过1的地址
+// Create an HTML page and count addresses whose occurrences exceed 1
 db.all('SELECT address, COUNT(address) AS count FROM addresses GROUP BY address HAVING COUNT(address) > 1', (err, rows) => {
     const htmlContent = `
         <html>
@@ -43,8 +46,29 @@ db.all('SELECT address, COUNT(address) AS count FROM addresses GROUP BY address 
         </html>
     `;
 
-    // 将 HTML 内容写入文件
+    // Write HTML content to file
     fs.writeFileSync('NFT-Addresses-CountGreaterThan1.html', htmlContent);
 });
 
+
+db.serialize(() => {
+    db.run('CREATE TABLE addresses (address TEXT)');
+    for (let rowNum = range.s.r + 1; rowNum <= range.e.r; rowNum++) {
+        const cellAddress = 'A' + rowNum;
+        const cell = sheet[cellAddress];
+        if (cell && cell.v) {
+            const address = cell.v;
+            addressesArray.push(address);
+            db.run('INSERT INTO addresses (address) VALUES (?)', address);
+        }
+    }
+});
+
 db.close();
+
+
+fs.writeFileSync('NFT-Addresses.json', JSON.stringify(addressesArray));
+
+const addressesFromFile = JSON.parse(fs.readFileSync('NFT-Addresses.json', 'utf8'));
+
+console.log(addressesFromFile);
