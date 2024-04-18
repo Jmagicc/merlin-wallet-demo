@@ -45,13 +45,13 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     }
 
     //    ["0x05Ab5025Fe3f0a0d26fcd5201448D0Ffb16370df", "0x121e33197fa468de29e294e66be1a72e89a8472e", "0x1b8F7EEfcf7773bf1E8682894c4caA8e7A8f404e", "0x52474d9D1df3cf8293e47bd64B146F61c4Db5f13", "0x529B39b21fe590618bac914797D0f8c08560961A", "0x6b26f3cedfe85ca25280c30200148da12e9c11a6", "0x7d25dbFfFFec79B9f41014B911AAB218e1bB47dB", "0x8668B818959a5fbc2687080F4f62D1D8699EF78c", "0x9e18c807F0b5793fc3c596048351F9A2D1D747E3", "0xb17Dc4c21961fDeDF65AAA634c8ee8586b7dd81e", "0xcfefc97d1d1b7bd172a0399d0c64d4f32bdad6ee"]
-    //    uint256 amount = -2;         Actual can mint quantity = amount
+    //    uint256 amount = 2;         Actual can mint quantity = amount
     function setVipAddressLimit(address[] memory addresses, int256 amount) external onlyOwner {
         require(addresses.length > 0, "Addresses array is empty");
-        require(amount >= 0, "Amount must be greater than or equal to 0");
+        require(amount > 1, "Amount must be greater than or equal to 0");
 
         for (uint256 i = 0; i < addresses.length; i++) {
-            mintAccountMap[addresses[i]] = 0 - amount;
+            mintAccountMap[addresses[i]] = 1 - amount;
         }
     }
 

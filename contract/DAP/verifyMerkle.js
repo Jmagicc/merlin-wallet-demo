@@ -38,3 +38,4 @@ console.log('verify:: ', isWhiteList);
 // merlin testnet:
 // DAP:  0xEB465248119BeA7ba8761a6d6C5e71acA6C3c8Da
 // DAP_NFT: 0x3faE39D61ca46612e9C3Ff06724c651EbCA45e68
+// DAP_NFT(Only 0.00000000001 ether;): 0x003eE97062411ADd6Ae6bc12EC50494cAb6F5284
