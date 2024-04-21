@@ -24,11 +24,11 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     uint256 private _totalSupply; // Currently issued NFT, including NFT purchased through VIP and non-VIP channels
 
 
-    constructor(string memory name, string memory symbol, bytes32 root,uint256 startTime) ERC721(name, symbol) Ownable(msg.sender) {
+    constructor(string memory name, string memory symbol, bytes32 root,uint256 start_tm) ERC721(name, symbol) Ownable(msg.sender) {
         distributionRoot=root;
         _totalSupply = 8888;
         tokenId = 0;
-        startTime = startTime;
+        startTime = start_tm;
         endTime =  startTime + TIME_DURATION;
     }
 
@@ -63,7 +63,7 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
 
     function mintNFT(string memory uri, bytes32[] memory proof) public payable nonReentrant {
         require(block.timestamp > startTime,"Time has not started yet");
-        require(wlMintCount + paidMintCount < totalSupply(), "Maximum supply reached");
+        require(wlMintCount + paidMintCount <= totalSupply(), "Maximum supply reached");
         require(mintAccountMap[msg.sender] < 1);
 
         bool isWlUser = checkIfUserIsWhitelisted(msg.sender, proof);
