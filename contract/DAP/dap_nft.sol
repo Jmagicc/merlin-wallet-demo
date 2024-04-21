@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 
 contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
-    uint256 public constant MINT_PRICE = 0.001 ether;
+    uint256 public constant MINT_PRICE = 0.0001 ether;
     uint256 private constant TIME_DURATION = 14400; // 4 hours
     uint256 public startTime;
     uint256 public endTime;
@@ -23,16 +23,12 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
 
     uint256 private _totalSupply; // Currently issued NFT, including NFT purchased through VIP and non-VIP channels
 
-    constructor(string memory name, string memory symbol, bytes32 root) ERC721(name, symbol) Ownable(msg.sender) {
+    constructor(string memory name, string memory symbol, bytes32 root,uint256 _startTime) ERC721(name, symbol) Ownable(msg.sender) {
         distributionRoot=root;
         _totalSupply = 8888;
         tokenId = 0;
-        startTime = 0;
-    }
-
-    function startSale() public onlyOwner {
-        startTime = block.timestamp;
-        endTime = startTime + TIME_DURATION;
+        startTime = _startTime;
+        endTime =  startTime + TIME_DURATION;
     }
 
     function totalSupply() public view returns (uint256) {
@@ -65,8 +61,7 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     }
 
     function mintNFT(string memory uri, bytes32[] memory proof) public payable nonReentrant {
-        require(startTime > 0);
-        require(block.timestamp > startTime);
+        require(block.timestamp > startTime,"Time has not started yet");
         require(wlMintCount + paidMintCount < totalSupply(), "Maximum supply reached");
         require(mintAccountMap[msg.sender] < 1);
 

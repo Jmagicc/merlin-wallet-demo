@@ -28,6 +28,7 @@ console.log('verify:: ', isWhiteList);
 //     '0x875ebe45c403ac4c20e7d810b50c6527f6b4ec31374dc69c5c249d98cca05704'
 // ]
 // verify::  true
+// startTime: 1713945600
 
 // proof:
 // ["0x729ffbffe681057be7afbb48b98aa316682cad9a80cf08ac43530c2bd8992cb7","0xa9ff1885859027dff8fdf196ddda6e6c1c44a4e8e416b41ad3aedd0a74b90a8c","0xb31aee2ace6148d019945bcdf5a15666bab360721b3c66f27b7e1c7f9b2f9051","0x875ebe45c403ac4c20e7d810b50c6527f6b4ec31374dc69c5c249d98cca05704"]
