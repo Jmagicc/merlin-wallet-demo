@@ -23,11 +23,11 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
 
     uint256 private _totalSupply; // Currently issued NFT, including NFT purchased through VIP and non-VIP channels
 
-    constructor(string memory name, string memory symbol, bytes32 root,uint256 _startTime) ERC721(name, symbol) Ownable(msg.sender) {
+    constructor(string memory name, string memory symbol, bytes32 root,uint256 startDate) ERC721(name, symbol) Ownable(msg.sender) {
         distributionRoot=root;
         _totalSupply = 8888;
         tokenId = 0;
-        startTime = _startTime;
+        startTime = startDate;
         endTime =  startTime + TIME_DURATION;
     }
 

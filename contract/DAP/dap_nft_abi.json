@@ -15,6 +15,11 @@
         "internalType": "bytes32",
         "name": "root",
         "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "startDate",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -635,13 +640,6 @@
       }
     ],
     "name": "setVipAddressLimit",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "startSale",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
