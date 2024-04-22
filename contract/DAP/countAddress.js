@@ -13,6 +13,9 @@ const range = XLSX.utils.decode_range(sheet['!ref']);
 // Array to store addresses
 let addressesArray = [];
 
+// Check if the string contains only English letters, numbers and spaces
+const isValidUTF8English = (str) => /^[a-zA-Z0-9\s]*$/.test(str);
+
 // Write Excel data to a SQLite database
 db.serialize(() => {
     db.run('CREATE TABLE IF NOT EXISTS addresses (address TEXT)');
@@ -20,9 +23,13 @@ db.serialize(() => {
         const cellAddress = 'A' + rowNum;
         const cell = sheet[cellAddress];
         if (cell && cell.v) {
-            const address = cell.v;
-            addressesArray.push(address);
-            db.run('INSERT INTO addresses (address) VALUES (?)', address);
+            // Remove leading and trailing spaces from address
+            const address = cell.v.trim();
+            // Check if the address is valid UTF-8 English
+            if (isValidUTF8English(address)) {
+                addressesArray.push(address);
+                db.run('INSERT INTO addresses (address) VALUES (?)', address);
+            }
         }
     }
 
