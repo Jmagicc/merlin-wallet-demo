@@ -6,7 +6,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
-
 contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     uint256 public mintPrice = 0.0001 ether;
     uint256 public startTime;
@@ -21,9 +20,15 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
 
     uint256 private _totalSupply; // Currently issued NFT, including NFT purchased through VIP and non-VIP channels
 
-    constructor(string memory name, string memory symbol, bytes32 root,uint256 startTimeStamp, uint256 endTimeStamp) ERC721(name, symbol) Ownable(msg.sender) {
+    event SaleEventTimeUpdated(uint256 startTime, uint256 endTime);
+    event MintPriceUpdated(uint256 newPrice);
+    event DistributionRootUpdated(bytes32 root);
+    event VipAddressLimitSet(address[] addresses, int256 amount);
+    event NFTMinted(address indexed owner, uint256 tokenId, string uri, bool isWhitelisted);
+
+    constructor(string memory name, string memory symbol, bytes32 root, uint256 startTimeStamp, uint256 endTimeStamp) ERC721(name, symbol) Ownable(msg.sender) {
         require(endTimeStamp > startTimeStamp, "End time must be after start time");
-        distributionRoot=root;
+        distributionRoot = root;
         _totalSupply = 8888;
         tokenId = 0;
         startTime = startTimeStamp;
@@ -36,16 +41,19 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
 
     function setMintPrice(uint256 newPrice) external onlyOwner {
         mintPrice = newPrice;
+        emit MintPriceUpdated(newPrice);
     }
 
-    function reviseStartSale(uint256 startTimeStamp, uint256 endTimeStamp) public onlyOwner {
+    function setSaleEventTime(uint256 startTimeStamp, uint256 endTimeStamp) public onlyOwner {
         require(startTimeStamp < endTimeStamp, "End time must be after start time");
         startTime = startTimeStamp;
         endTime = endTimeStamp;
+        emit SaleEventTimeUpdated(startTimeStamp, endTimeStamp);
     }
 
     function setDistributionRoot(bytes32 root) public onlyOwner {
         distributionRoot = root;
+        emit DistributionRootUpdated(root);
     }
 
     function verifyAddressInWhitelist(address account, bytes32[] memory proof) public view returns (bool) {
@@ -57,7 +65,6 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
         return verifyAddressInWhitelist(user, proof);
     }
 
-    //    uint256 amount = 2;         Actual can mint quantity = amount
     function setVipAddressLimit(address[] memory addresses, int256 amount) external onlyOwner {
         require(addresses.length > 0, "Addresses array is empty");
         require(amount > 1, "Amount must be greater than or equal to 1");
@@ -65,6 +72,8 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
         for (uint256 i = 0; i < addresses.length; i++) {
             mintAccountMap[addresses[i]] = 1 - amount;
         }
+
+        emit VipAddressLimitSet(addresses, amount);
     }
 
     function getAddressLimit(address addr) view external onlyOwner returns (int256) {
@@ -72,7 +81,7 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     }
 
     function mintNFT(string memory uri, bytes32[] memory proof) public payable nonReentrant {
-        require(block.timestamp > startTime,"Time has not started yet");
+        require(block.timestamp > startTime, "Time has not started yet");
         require(wlMintCount + paidMintCount <= totalSupply(), "Maximum supply reached");
         require(mintAccountMap[msg.sender] < 1);
 
@@ -99,6 +108,8 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
         mintAccountMap[msg.sender]++;
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, uri);
+
+        emit NFTMinted(msg.sender, tokenId, uri, isWlUser);
         tokenId++;
     }
 
