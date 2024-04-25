@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     uint256 public mintPrice = 0.0001 ether;
-    uint256 private constant TIME_DURATION = 14400; // 4 hours
     uint256 public startTime;
     uint256 public endTime;
     uint256 public paidMintCount;
@@ -17,36 +16,38 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     uint256 public wlMintCount;
     bytes32 public distributionRoot;
 
-
     // VIP address can mint quantity
     mapping(address => int256) mintAccountMap;
 
     uint256 private _totalSupply; // Currently issued NFT, including NFT purchased through VIP and non-VIP channels
 
-
-    constructor(string memory name, string memory symbol, bytes32 root,uint256 startTimeStamp) ERC721(name, symbol) Ownable(msg.sender) {
+    constructor(string memory name, string memory symbol, bytes32 root,uint256 startTimeStamp, uint256 endTimeStamp) ERC721(name, symbol) Ownable(msg.sender) {
+        require(endTimeStamp > startTimeStamp, "End time must be after start time");
         distributionRoot=root;
         _totalSupply = 8888;
         tokenId = 0;
         startTime = startTimeStamp;
-        endTime =  startTime + TIME_DURATION;
+        endTime =  endTimeStamp;
     }
-
 
     function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
+
     function setMintPrice(uint256 newPrice) external onlyOwner {
         mintPrice = newPrice;
     }
-    function reviseStartSale() public onlyOwner {
-        startTime = block.timestamp;
-        endTime = startTime + TIME_DURATION;
+
+    function reviseStartSale(uint256 startTimeStamp, uint256 endTimeStamp) public onlyOwner {
+        require(startTimeStamp < endTimeStamp, "End time must be after start time");
+        startTime = startTimeStamp;
+        endTime = endTimeStamp;
     }
 
     function setDistributionRoot(bytes32 root) public onlyOwner {
         distributionRoot = root;
     }
+
     function verifyAddressInWhitelist(address account, bytes32[] memory proof) public view returns (bool) {
         bytes32 encodedAccount = keccak256(abi.encodePacked(account));
         return MerkleProof.verify(proof, distributionRoot, encodedAccount);
