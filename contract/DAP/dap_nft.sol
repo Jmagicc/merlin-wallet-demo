@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 
 contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
-    uint256 public constant MINT_PRICE = 0.0001 ether;
+    uint256 public mintPrice = 0.0001 ether;
     uint256 private constant TIME_DURATION = 14400; // 4 hours
     uint256 public startTime;
     uint256 public endTime;
@@ -24,17 +24,26 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
     uint256 private _totalSupply; // Currently issued NFT, including NFT purchased through VIP and non-VIP channels
 
 
-    constructor(string memory name, string memory symbol, bytes32 root,uint256 start_tm) ERC721(name, symbol) Ownable(msg.sender) {
+    constructor(string memory name, string memory symbol, bytes32 root,uint256 startTimeStamp) ERC721(name, symbol) Ownable(msg.sender) {
         distributionRoot=root;
         _totalSupply = 8888;
         tokenId = 0;
-        startTime = start_tm;
+        startTime = startTimeStamp;
         endTime =  startTime + TIME_DURATION;
     }
+
 
     function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
+    function setMintPrice(uint256 newPrice) external onlyOwner {
+        mintPrice = newPrice;
+    }
+    function reviseStartSale() public onlyOwner {
+        startTime = block.timestamp;
+        endTime = startTime + TIME_DURATION;
+    }
+
     function setDistributionRoot(bytes32 root) public onlyOwner {
         distributionRoot = root;
     }
@@ -79,7 +88,7 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
         if (isWlUser) {
             wlMintCount++;
         } else {
-            require(msg.value >= MINT_PRICE, "Insufficient merlin btc sent");
+            require(msg.value >= mintPrice, "Insufficient merlin btc sent");
 
             (bool sent, ) = payable(owner()).call{value: msg.value}("");
             require(sent, "Failed to send merlin btc");
@@ -88,8 +97,8 @@ contract NFTContract is ERC721URIStorage, Ownable, ReentrancyGuard {
 
         mintAccountMap[msg.sender]++;
         _safeMint(msg.sender, tokenId);
-        tokenId++;
         _setTokenURI(tokenId, uri);
+        tokenId++;
     }
 
     function getMintedAmounts() public onlyOwner view returns (uint256, uint256) {
