@@ -11,7 +11,7 @@ const WhiteList = JSON.parse(jsonString);
 const leaves = WhiteList.map((x) => keccak256(x));
 const merkleTree = new MerkleTree(leaves, keccak256, { sortPairs: true });
 const rootHash = '0x' + merkleTree.getRoot().toString('hex');
-const testAddress = '0x4285710Ed2a30215d823927E281985011395176B';
+const testAddress = '0xcc924d498ae08c844546cfce81556e7c1ff6b525';
 const leaf = keccak256(testAddress);
 const proof = merkleTree.getHexProof(leaf);
 const isWhiteList = merkleTree.verify(proof, leaf, rootHash);
