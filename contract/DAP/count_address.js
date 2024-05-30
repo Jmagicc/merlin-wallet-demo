@@ -5,8 +5,8 @@ import fs from 'fs';
 const db = new sqlite3.Database(':memory:');
 
 // Read Excel file
-const workbook = XLSX.readFile('NFTWL-Gary.xlsx');
-const sheetName = '4.18';
+const workbook = XLSX.readFile('PizzaPadNFTWL-Gary.xlsx');
+const sheetName = 'sheet';
 const sheet = workbook.Sheets[sheetName];
 const range = XLSX.utils.decode_range(sheet['!ref']);
 
